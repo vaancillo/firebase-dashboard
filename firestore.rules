@@ -1,0 +1,39 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── Users collection ──────────────────────────────────
+    // A user can only read and write their own document.
+    match /users/{userId} {
+      allow read:   if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null
+                    && request.auth.uid == userId
+                    && isValidUserDoc(request.resource.data);
+      allow update: if request.auth != null
+                    && request.auth.uid == userId
+                    && isValidUpdate(request.resource.data);
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // ─── Deny everything else ─────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+// ─── Helper functions ─────────────────────────────────
+function isValidUserDoc(data) {
+  return data.keys().hasAll(['uid','email','firstName','lastName','displayName',
+                              'role','theme','notifications','createdAt','updatedAt'])
+    && data.uid is string
+    && data.email is string
+    && data.role == 'user';  // Prevent self-promotion to admin
+}
+
+function isValidUpdate(data) {
+  // Cannot change uid, email, or role via client
+  return !data.keys().hasAny(['uid'])
+    && (!data.keys().hasAny(['role']) || data.role == 'user');
+}

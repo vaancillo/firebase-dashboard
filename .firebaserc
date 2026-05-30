@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "YOUR_PROJECT_ID",
+    "production": "YOUR_PROJECT_ID"
+  }
+}
