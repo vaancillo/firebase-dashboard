@@ -233,6 +233,4 @@ users/{userId}  →  readable/writable only by request.auth.uid == userId
 
 MIT — free to use, modify, and distribute.
 
----
-
-*Built with ❤️ using [Claude](https://claude.ai) and Firebase*
+---## 🙌 Contributing
